@@ -50,6 +50,9 @@ samconfig.toml
 # Claude Code (user-local settings — keep project settings.json shared)
 .claude/settings.local.json
 
+# Local session restoration notes (not for public repo)
+SESSION_LOG.md
+
 # pytest
 .pytest_cache/
 .coverage
