@@ -1,0 +1,202 @@
+[
+  {
+    "scheme_bin_bucket": "VISA#4761",
+    "mcc_currency_amount": "5411#EUR#0-50",
+    "auth_rate_7d": 0.952,
+    "auth_rate_30d": 0.949,
+    "sample_count": 18420,
+    "decline_breakdown": { "do_not_honor": 0.018, "insufficient_funds": 0.014, "fraud": 0.006, "other": 0.010 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4761",
+    "mcc_currency_amount": "5411#EUR#50-200",
+    "auth_rate_7d": 0.941,
+    "auth_rate_30d": 0.939,
+    "sample_count": 24105,
+    "decline_breakdown": { "do_not_honor": 0.025, "insufficient_funds": 0.018, "fraud": 0.008, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4761",
+    "mcc_currency_amount": "5411#EUR#200-1000",
+    "auth_rate_7d": 0.925,
+    "auth_rate_30d": 0.922,
+    "sample_count": 11210,
+    "decline_breakdown": { "do_not_honor": 0.032, "insufficient_funds": 0.025, "fraud": 0.010, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4761",
+    "mcc_currency_amount": "5411#EUR#1000+",
+    "auth_rate_7d": 0.875,
+    "auth_rate_30d": 0.871,
+    "sample_count": 3204,
+    "decline_breakdown": { "do_not_honor": 0.045, "insufficient_funds": 0.050, "fraud": 0.018, "other": 0.012 }
+  },
+  {
+    "scheme_bin_bucket": "CB#4761",
+    "mcc_currency_amount": "5411#EUR#0-50",
+    "auth_rate_7d": 0.961,
+    "auth_rate_30d": 0.959,
+    "sample_count": 21540,
+    "decline_breakdown": { "do_not_honor": 0.014, "insufficient_funds": 0.012, "fraud": 0.005, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "CB#4761",
+    "mcc_currency_amount": "5411#EUR#50-200",
+    "auth_rate_7d": 0.948,
+    "auth_rate_30d": 0.946,
+    "sample_count": 28640,
+    "decline_breakdown": { "do_not_honor": 0.020, "insufficient_funds": 0.018, "fraud": 0.006, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "CB#4761",
+    "mcc_currency_amount": "5411#EUR#200-1000",
+    "auth_rate_7d": 0.932,
+    "auth_rate_30d": 0.930,
+    "sample_count": 12380,
+    "decline_breakdown": { "do_not_honor": 0.028, "insufficient_funds": 0.024, "fraud": 0.008, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "CB#4761",
+    "mcc_currency_amount": "5411#EUR#1000+",
+    "auth_rate_7d": 0.881,
+    "auth_rate_30d": 0.878,
+    "sample_count": 2870,
+    "decline_breakdown": { "do_not_honor": 0.042, "insufficient_funds": 0.048, "fraud": 0.018, "other": 0.011 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4761",
+    "mcc_currency_amount": "4722#USD#1000+",
+    "auth_rate_7d": 0.852,
+    "auth_rate_30d": 0.847,
+    "sample_count": 1820,
+    "decline_breakdown": { "do_not_honor": 0.055, "insufficient_funds": 0.038, "fraud": 0.032, "other": 0.023 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4761",
+    "mcc_currency_amount": "4722#USD#200-1000",
+    "auth_rate_7d": 0.882,
+    "auth_rate_30d": 0.879,
+    "sample_count": 4310,
+    "decline_breakdown": { "do_not_honor": 0.044, "insufficient_funds": 0.030, "fraud": 0.025, "other": 0.019 }
+  },
+  {
+    "scheme_bin_bucket": "CB#4761",
+    "mcc_currency_amount": "4722#USD#1000+",
+    "auth_rate_7d": 0.808,
+    "auth_rate_30d": 0.802,
+    "sample_count": 940,
+    "decline_breakdown": { "do_not_honor": 0.062, "insufficient_funds": 0.044, "fraud": 0.048, "other": 0.038 }
+  },
+  {
+    "scheme_bin_bucket": "CB#4761",
+    "mcc_currency_amount": "4722#USD#200-1000",
+    "auth_rate_7d": 0.842,
+    "auth_rate_30d": 0.839,
+    "sample_count": 2150,
+    "decline_breakdown": { "do_not_honor": 0.052, "insufficient_funds": 0.038, "fraud": 0.040, "other": 0.028 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4761",
+    "mcc_currency_amount": "5812#EUR#50-200",
+    "auth_rate_7d": 0.945,
+    "auth_rate_30d": 0.943,
+    "sample_count": 19840,
+    "decline_breakdown": { "do_not_honor": 0.022, "insufficient_funds": 0.017, "fraud": 0.008, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "CB#4761",
+    "mcc_currency_amount": "5812#EUR#50-200",
+    "auth_rate_7d": 0.952,
+    "auth_rate_30d": 0.950,
+    "sample_count": 22810,
+    "decline_breakdown": { "do_not_honor": 0.018, "insufficient_funds": 0.016, "fraud": 0.006, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4111",
+    "mcc_currency_amount": "5411#USD#0-50",
+    "auth_rate_7d": 0.954,
+    "auth_rate_30d": 0.951,
+    "sample_count": 32510,
+    "decline_breakdown": { "do_not_honor": 0.018, "insufficient_funds": 0.014, "fraud": 0.006, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4111",
+    "mcc_currency_amount": "5411#USD#50-200",
+    "auth_rate_7d": 0.943,
+    "auth_rate_30d": 0.941,
+    "sample_count": 41820,
+    "decline_breakdown": { "do_not_honor": 0.024, "insufficient_funds": 0.018, "fraud": 0.008, "other": 0.007 }
+  },
+  {
+    "scheme_bin_bucket": "VISA#4111",
+    "mcc_currency_amount": "5411#USD#200-1000",
+    "auth_rate_7d": 0.928,
+    "auth_rate_30d": 0.925,
+    "sample_count": 19340,
+    "decline_breakdown": { "do_not_honor": 0.030, "insufficient_funds": 0.024, "fraud": 0.010, "other": 0.008 }
+  },
+  {
+    "scheme_bin_bucket": "MASTERCARD#5111",
+    "mcc_currency_amount": "5411#USD#50-200",
+    "auth_rate_7d": 0.938,
+    "auth_rate_30d": 0.935,
+    "sample_count": 28710,
+    "decline_breakdown": { "do_not_honor": 0.026, "insufficient_funds": 0.020, "fraud": 0.009, "other": 0.007 }
+  },
+  {
+    "scheme_bin_bucket": "MASTERCARD#5111",
+    "mcc_currency_amount": "5411#USD#200-1000",
+    "auth_rate_7d": 0.921,
+    "auth_rate_30d": 0.918,
+    "sample_count": 14520,
+    "decline_breakdown": { "do_not_honor": 0.032, "insufficient_funds": 0.025, "fraud": 0.012, "other": 0.010 }
+  },
+  {
+    "scheme_bin_bucket": "DISCOVER#6022",
+    "mcc_currency_amount": "5411#USD#50-200",
+    "auth_rate_7d": 0.929,
+    "auth_rate_30d": 0.926,
+    "sample_count": 8410,
+    "decline_breakdown": { "do_not_honor": 0.030, "insufficient_funds": 0.024, "fraud": 0.010, "other": 0.007 }
+  },
+  {
+    "scheme_bin_bucket": "MASTERCARD#6022",
+    "mcc_currency_amount": "5411#USD#50-200",
+    "auth_rate_7d": 0.935,
+    "auth_rate_30d": 0.933,
+    "sample_count": 9120,
+    "decline_breakdown": { "do_not_honor": 0.028, "insufficient_funds": 0.022, "fraud": 0.009, "other": 0.006 }
+  },
+  {
+    "scheme_bin_bucket": "MASTERCARD#5404",
+    "mcc_currency_amount": "5411#EUR#50-200",
+    "auth_rate_7d": 0.939,
+    "auth_rate_30d": 0.936,
+    "sample_count": 22410,
+    "decline_breakdown": { "do_not_honor": 0.025, "insufficient_funds": 0.020, "fraud": 0.009, "other": 0.007 }
+  },
+  {
+    "scheme_bin_bucket": "MAESTRO#5404",
+    "mcc_currency_amount": "5411#EUR#50-200",
+    "auth_rate_7d": 0.946,
+    "auth_rate_30d": 0.944,
+    "sample_count": 26830,
+    "decline_breakdown": { "do_not_honor": 0.022, "insufficient_funds": 0.018, "fraud": 0.007, "other": 0.007 }
+  },
+  {
+    "scheme_bin_bucket": "UNIONPAY#6222",
+    "mcc_currency_amount": "5411#CNY#50-200",
+    "auth_rate_7d": 0.965,
+    "auth_rate_30d": 0.963,
+    "sample_count": 34210,
+    "decline_breakdown": { "do_not_honor": 0.014, "insufficient_funds": 0.012, "fraud": 0.005, "other": 0.004 }
+  },
+  {
+    "scheme_bin_bucket": "MASTERCARD#6222",
+    "mcc_currency_amount": "5411#CNY#50-200",
+    "auth_rate_7d": 0.921,
+    "auth_rate_30d": 0.918,
+    "sample_count": 5810,
+    "decline_breakdown": { "do_not_honor": 0.032, "insufficient_funds": 0.025, "fraud": 0.014, "other": 0.008 }
+  }
+]

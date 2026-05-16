@@ -1,0 +1,9 @@
+[
+  { "scheme_id": "VISA",       "display_name": "Visa",              "enabled": true },
+  { "scheme_id": "MASTERCARD", "display_name": "Mastercard",        "enabled": true },
+  { "scheme_id": "CB",         "display_name": "Cartes Bancaires",  "enabled": true },
+  { "scheme_id": "DISCOVER",   "display_name": "Discover",          "enabled": true },
+  { "scheme_id": "AMEX",       "display_name": "American Express",  "enabled": true },
+  { "scheme_id": "UNIONPAY",   "display_name": "UnionPay",          "enabled": true },
+  { "scheme_id": "MAESTRO",    "display_name": "Maestro",           "enabled": true }
+]

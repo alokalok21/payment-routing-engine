@@ -1,0 +1,163 @@
+[
+  {
+    "bin_prefix": "476173",
+    "eligible_schemes": ["VISA", "CB"],
+    "card_type": "CREDIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "FR",
+    "issuer_bank": "BNP Paribas",
+    "dual_brand": true,
+    "domestic_scheme": "CB"
+  },
+  {
+    "bin_prefix": "497010",
+    "eligible_schemes": ["VISA", "CB"],
+    "card_type": "DEBIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "FR",
+    "issuer_bank": "Societe Generale",
+    "dual_brand": true,
+    "domestic_scheme": "CB"
+  },
+  {
+    "bin_prefix": "401200",
+    "eligible_schemes": ["VISA", "CB"],
+    "card_type": "CREDIT",
+    "card_product": "GOLD",
+    "issuer_country": "FR",
+    "issuer_bank": "Credit Agricole",
+    "dual_brand": true,
+    "domestic_scheme": "CB"
+  },
+  {
+    "bin_prefix": "466900",
+    "eligible_schemes": ["VISA", "CB"],
+    "card_type": "CREDIT",
+    "card_product": "PLATINUM",
+    "issuer_country": "FR",
+    "issuer_bank": "LCL",
+    "dual_brand": true,
+    "domestic_scheme": "CB"
+  },
+  {
+    "bin_prefix": "547173",
+    "eligible_schemes": ["MASTERCARD", "CB"],
+    "card_type": "CREDIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "FR",
+    "issuer_bank": "BPCE",
+    "dual_brand": true,
+    "domestic_scheme": "CB"
+  },
+  {
+    "bin_prefix": "411111",
+    "eligible_schemes": ["VISA"],
+    "card_type": "CREDIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "US",
+    "issuer_bank": "JPMorgan Chase",
+    "dual_brand": false
+  },
+  {
+    "bin_prefix": "416100",
+    "eligible_schemes": ["VISA"],
+    "card_type": "DEBIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "US",
+    "issuer_bank": "Bank of America",
+    "dual_brand": false
+  },
+  {
+    "bin_prefix": "511111",
+    "eligible_schemes": ["MASTERCARD"],
+    "card_type": "CREDIT",
+    "card_product": "GOLD",
+    "issuer_country": "US",
+    "issuer_bank": "Citi",
+    "dual_brand": false
+  },
+  {
+    "bin_prefix": "601100",
+    "eligible_schemes": ["DISCOVER"],
+    "card_type": "CREDIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "US",
+    "issuer_bank": "Discover Bank",
+    "dual_brand": false
+  },
+  {
+    "bin_prefix": "602246",
+    "eligible_schemes": ["DISCOVER", "MASTERCARD"],
+    "card_type": "DEBIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "US",
+    "issuer_bank": "PenFed Credit Union",
+    "dual_brand": true,
+    "domestic_scheme": "DISCOVER"
+  },
+  {
+    "bin_prefix": "379000",
+    "eligible_schemes": ["AMEX"],
+    "card_type": "CREDIT",
+    "card_product": "PLATINUM",
+    "issuer_country": "US",
+    "issuer_bank": "American Express",
+    "dual_brand": false
+  },
+  {
+    "bin_prefix": "374200",
+    "eligible_schemes": ["AMEX"],
+    "card_type": "CREDIT",
+    "card_product": "GOLD",
+    "issuer_country": "US",
+    "issuer_bank": "American Express",
+    "dual_brand": false
+  },
+  {
+    "bin_prefix": "540400",
+    "eligible_schemes": ["MASTERCARD", "MAESTRO"],
+    "card_type": "DEBIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "DE",
+    "issuer_bank": "Deutsche Bank",
+    "dual_brand": true,
+    "domestic_scheme": "MAESTRO"
+  },
+  {
+    "bin_prefix": "422222",
+    "eligible_schemes": ["VISA"],
+    "card_type": "CREDIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "DE",
+    "issuer_bank": "Commerzbank",
+    "dual_brand": false
+  },
+  {
+    "bin_prefix": "555550",
+    "eligible_schemes": ["MASTERCARD"],
+    "card_type": "CREDIT",
+    "card_product": "INFINITE",
+    "issuer_country": "DE",
+    "issuer_bank": "DZ Bank",
+    "dual_brand": false
+  },
+  {
+    "bin_prefix": "622240",
+    "eligible_schemes": ["UNIONPAY", "MASTERCARD"],
+    "card_type": "CREDIT",
+    "card_product": "GOLD",
+    "issuer_country": "CN",
+    "issuer_bank": "ICBC",
+    "dual_brand": true,
+    "domestic_scheme": "UNIONPAY"
+  },
+  {
+    "bin_prefix": "622200",
+    "eligible_schemes": ["UNIONPAY"],
+    "card_type": "DEBIT",
+    "card_product": "CLASSIC",
+    "issuer_country": "CN",
+    "issuer_bank": "Bank of China",
+    "dual_brand": false
+  }
+]

@@ -1,0 +1,164 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AI-Driven Payment Scheme Routing Engine (Academic AI/ML Showcase)
+
+Parameters:
+  OnnxBucketName:
+    Type: String
+    Default: payment-routing-onnx-654654151376
+    Description: S3 bucket name for the ONNX interchange model (must be globally unique).
+  BedrockModelId:
+    Type: String
+    Default: us.anthropic.claude-sonnet-4-6
+    Description: Bedrock inference profile ID for the routing agent.
+
+Globals:
+  Function:
+    Runtime: python3.13
+    Architectures: [x86_64]
+    Timeout: 60
+    MemorySize: 1024
+    Environment:
+      Variables:
+        LOG_LEVEL: INFO
+
+Resources:
+
+  # -------------------------------------------------------------------
+  # DynamoDB: BIN_Table
+  # -------------------------------------------------------------------
+  BinTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: BIN_Table
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: bin_prefix
+          AttributeType: S
+      KeySchema:
+        - AttributeName: bin_prefix
+          KeyType: HASH
+
+  # -------------------------------------------------------------------
+  # DynamoDB: Scheme_Config
+  # -------------------------------------------------------------------
+  SchemeConfigTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Scheme_Config
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: scheme_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: scheme_id
+          KeyType: HASH
+
+  # -------------------------------------------------------------------
+  # DynamoDB: Auth_Rate_Stats
+  # -------------------------------------------------------------------
+  AuthRateStatsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Auth_Rate_Stats
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: scheme_bin_bucket
+          AttributeType: S
+        - AttributeName: mcc_currency_amount
+          AttributeType: S
+      KeySchema:
+        - AttributeName: scheme_bin_bucket
+          KeyType: HASH
+        - AttributeName: mcc_currency_amount
+          KeyType: RANGE
+
+  # -------------------------------------------------------------------
+  # S3: ONNX model artifact bucket
+  # -------------------------------------------------------------------
+  OnnxModelBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref OnnxBucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  # -------------------------------------------------------------------
+  # API Gateway: explicit REST API so we can set a stage name
+  # -------------------------------------------------------------------
+  RoutingApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: payment-routing-api
+      StageName: prod
+      EndpointConfiguration:
+        Type: REGIONAL
+
+  # -------------------------------------------------------------------
+  # Lambda: routing_handler
+  # -------------------------------------------------------------------
+  RoutingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: payment-routing-engine
+      CodeUri: ../
+      Handler: src.handler.routing_handler.lambda_handler
+      Environment:
+        Variables:
+          BIN_TABLE_NAME: !Ref BinTable
+          SCHEME_CONFIG_TABLE_NAME: !Ref SchemeConfigTable
+          AUTH_RATE_STATS_TABLE_NAME: !Ref AuthRateStatsTable
+          ONNX_BUCKET: !Ref OnnxBucketName
+          ONNX_MODEL_KEY: interchange_model.onnx
+          ONNX_METADATA_KEY: feature_metadata.json
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref BinTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref SchemeConfigTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref AuthRateStatsTable
+        - S3ReadPolicy:
+            BucketName: !Ref OnnxBucketName
+        - Statement:
+            Sid: BedrockConverseAccess
+            Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+              - bedrock:InvokeModelWithResponseStream
+              - bedrock:Converse
+              - bedrock:ConverseStream
+            Resource: "*"
+      Events:
+        RoutePost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RoutingApi
+            Path: /route
+            Method: POST
+
+Outputs:
+  BinTableName:
+    Description: BIN_Table DynamoDB table name
+    Value: !Ref BinTable
+  SchemeConfigTableName:
+    Description: Scheme_Config DynamoDB table name
+    Value: !Ref SchemeConfigTable
+  AuthRateStatsTableName:
+    Description: Auth_Rate_Stats DynamoDB table name
+    Value: !Ref AuthRateStatsTable
+  OnnxBucketNameOutput:
+    Description: S3 bucket for ONNX model artifact
+    Value: !Ref OnnxModelBucket
+  RoutingApiUrl:
+    Description: API Gateway invoke URL for POST /route
+    Value: !Sub "https://${RoutingApi}.execute-api.${AWS::Region}.amazonaws.com/prod/route"
+  RoutingFunctionName:
+    Description: Lambda function name
+    Value: !Ref RoutingFunction

@@ -1,0 +1,78 @@
+{
+  "categorical_cols": [
+    "scheme_id",
+    "card_type",
+    "card_product",
+    "mcc",
+    "merchant_country",
+    "card_country"
+  ],
+  "numeric_cols": [
+    "amount",
+    "cross_border"
+  ],
+  "categories": {
+    "scheme_id": [
+      "AMEX",
+      "CB",
+      "DISCOVER",
+      "MAESTRO",
+      "MASTERCARD",
+      "UNIONPAY",
+      "VISA"
+    ],
+    "card_type": [
+      "CREDIT",
+      "DEBIT",
+      "PREPAID"
+    ],
+    "card_product": [
+      "CLASSIC",
+      "GOLD",
+      "INFINITE",
+      "PLATINUM"
+    ],
+    "mcc": [
+      "4111",
+      "4722",
+      "5311",
+      "5411",
+      "5732",
+      "5812",
+      "5912",
+      "5999",
+      "7011",
+      "8011"
+    ],
+    "merchant_country": [
+      "BR",
+      "CN",
+      "DE",
+      "ES",
+      "FR",
+      "GB",
+      "IN",
+      "IT",
+      "JP",
+      "US"
+    ],
+    "card_country": [
+      "BR",
+      "CN",
+      "DE",
+      "ES",
+      "FR",
+      "GB",
+      "IN",
+      "IT",
+      "JP",
+      "US"
+    ]
+  },
+  "feature_count": 46,
+  "metrics": {
+    "mae": 0.03926383703947067,
+    "rmse": 0.05425299519753022,
+    "r2": 0.9987574219703674
+  }
+}

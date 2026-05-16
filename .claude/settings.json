@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python -m py_compile src/__init__.py src/model/__init__.py src/model/transaction_context.py src/model/bin_info.py src/model/scheme_config.py src/model/auth_rate_stats.py src/model/interchange_estimate.py src/model/routing_decision.py src/config/__init__.py src/config/dynamodb_config.py src/repository/__init__.py src/repository/bin_repository.py src/repository/scheme_config_repository.py src/repository/auth_rate_stats_repository.py infrastructure/seed_loader.py)",
+      "PowerShell(sam validate --template infrastructure/template.yaml --lint --region us-east-1)",
+      "PowerShell(python -c \"import json; [print\\(f'OK: {f} \\({len\\(json.load\\(open\\(f\\)\\)\\)} items\\)'\\) for f in ['infrastructure/seed-data/scheme-config.json', 'infrastructure/seed-data/bin-table-sample.json', 'infrastructure/seed-data/auth-rate-stats.json']]\")",
+      "PowerShell(pip install boto3 2>&1)",
+      "PowerShell(sam build --template infrastructure/template.yaml 2>&1)",
+      "PowerShell(sam deploy --stack-name payment-routing-engine --region us-east-1 --no-confirm-changeset --capabilities CAPABILITY_IAM --resolve-s3 --parameter-overrides OnnxBucketName=payment-routing-onnx-654654151376 2>&1)",
+      "PowerShell(python infrastructure/seed_loader.py 2>&1)",
+      "PowerShell(aws dynamodb get-item --table-name BIN_Table --key '{\\\\\"bin_prefix\\\\\":{\\\\\"S\\\\\":\\\\\"476173\\\\\"}}' --region us-east-1 --output json)",
+      "PowerShell(pip install -r ml/requirements-ml.txt 2>&1)",
+      "PowerShell(python ml/generate_synthetic_data.py)",
+      "PowerShell(python ml/train_interchange_model.py --upload 2>&1)",
+      "PowerShell(aws s3 ls s3://payment-routing-onnx-654654151376/ --region us-east-1)",
+      "PowerShell(python -m py_compile src/service/bin_lookup_service.py src/service/scheme_status_service.py src/service/auth_rate_stats_service.py src/config/bedrock_config.py src/agent/__init__.py src/agent/agent_tool_dispatcher.py src/agent/routing_decision_parser.py src/agent/bedrock_routing_agent.py)",
+      "PowerShell(python -c \"from src.agent.routing_decision_parser import parse; import json; sample = json.dumps\\({'selected_scheme': 'CB', 'confidence': 0.89, 'rationale': 'CB wins on lower interchange.', 'fallback_chain': [{'scheme': 'VISA', 'reason': 'Second highest score.'}], 'score_breakdown': {'CB': {'auth_rate': 0.948, 'estimated_interchange_pct': 0.244, 'score': 0.566, 'weight_auth': 0.6, 'weight_ic': 0.4}, 'VISA': {'auth_rate': 0.941, 'estimated_interchange_pct': 0.428, 'score': 0.563, 'weight_auth': 0.6, 'weight_ic': 0.4}}}\\); d = parse\\(sample\\); print\\(f'Parsed selected_scheme={d.selected_scheme} confidence={d.confidence} schemes={list\\(d.score_breakdown.keys\\(\\)\\)}'\\)\")",
+      "PowerShell(pip install -q pytest pytest-cov \"moto[dynamodb,s3]\" 2>&1)",
+      "PowerShell(python -m pytest tests/ -v 2>&1)",
+      "PowerShell(sam validate --template infrastructure/template.yaml --region us-east-1 2>&1)",
+      "PowerShell(docker --version 2>&1)",
+      "PowerShell(docker info 2>&1)",
+      "PowerShell(sam build --template infrastructure/template.yaml --use-container 2>&1)",
+      "PowerShell(sam deploy --stack-name payment-routing-engine --region us-east-1 --no-confirm-changeset --capabilities CAPABILITY_IAM --resolve-s3 --parameter-overrides OnnxBucketName=payment-routing-onnx-654654151376 BedrockModelId=us.anthropic.claude-sonnet-4-6 2>&1)",
+      "PowerShell(Write-Host \"Current UTC time: $\\(\\(Get-Date\\).ToUniversalTime\\(\\).ToString\\('yyyy-MM-dd HH:mm:ss'\\)\\) UTC\"; Write-Host \"Quota typically resets at 00:00 UTC.\")",
+      "PowerShell(aws service-quotas list-service-quotas --service-code bedrock --region us-east-1 --query \"Quotas[?contains\\(QuotaName, 'Claude Sonnet 4.6'\\) || contains\\(QuotaName, 'sonnet-4-6'\\)].[QuotaName,Value,Adjustable]\" --output table 2>&1)",
+      "PowerShell(aws service-quotas list-service-quotas --service-code bedrock --region us-east-1 --query \"Quotas[?contains\\(QuotaName, 'tokens per minute'\\) && Value > `0`].[QuotaName,Value]\" --output table 2>&1)",
+      "PowerShell(aws bedrock get-foundation-model-availability --model-id us.anthropic.claude-sonnet-4-6 --region us-east-1 2>&1)",
+      "PowerShell(gh --version 2>&1)",
+      "PowerShell(gh auth status 2>&1)",
+      "PowerShell(git config --global user.name 2>&1)",
+      "PowerShell(git config --global user.email 2>&1)",
+      "PowerShell(winget install --id GitHub.cli --silent --accept-package-agreements --accept-source-agreements 2>&1)",
+      "Bash(git init *)",
+      "Bash(git config *)",
+      "Bash(git add *)"
+    ]
+  }
+}

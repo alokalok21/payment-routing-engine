@@ -1,0 +1,10 @@
+{
+  "_comment": "Static interchange rates (%) used when the ONNX model is unavailable. Domestic and cross-border tiers per scheme + card_type. card_product not modelled in fallback.",
+  "VISA":       { "CREDIT":  { "domestic": 0.30, "cross_border": 1.50 }, "DEBIT": { "domestic": 0.20, "cross_border": 1.20 }, "PREPAID": { "domestic": 0.40, "cross_border": 1.60 } },
+  "MASTERCARD": { "CREDIT":  { "domestic": 0.30, "cross_border": 1.50 }, "DEBIT": { "domestic": 0.20, "cross_border": 1.20 }, "PREPAID": { "domestic": 0.40, "cross_border": 1.60 } },
+  "CB":         { "CREDIT":  { "domestic": 0.30, "cross_border": 1.20 }, "DEBIT": { "domestic": 0.20, "cross_border": 1.00 } },
+  "DISCOVER":   { "CREDIT":  { "domestic": 1.50, "cross_border": 2.40 }, "DEBIT": { "domestic": 0.80, "cross_border": 1.80 } },
+  "AMEX":       { "CREDIT":  { "domestic": 2.50, "cross_border": 3.20 } },
+  "UNIONPAY":   { "CREDIT":  { "domestic": 0.45, "cross_border": 1.40 }, "DEBIT": { "domestic": 0.18, "cross_border": 1.00 } },
+  "MAESTRO":    { "DEBIT":   { "domestic": 0.20, "cross_border": 1.10 } }
+}
