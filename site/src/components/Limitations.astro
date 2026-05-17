@@ -1,0 +1,67 @@
+---
+---
+<section id="limitations" class="paper-col py-10">
+  <p class="section-num">6 &middot; Limitations &amp; Future Work</p>
+  <h2>Honest Boundaries</h2>
+
+  <h3>6.1 Synthetic Data</h3>
+  <p class="mb-4">
+    The training corpus and seeded <code>Auth_Rate_Stats</code> table are synthetic, parameterised
+    from publicly known interchange tiers and plausible authorization patterns. The model has
+    therefore not been validated against real settlement invoices or live issuer responses.
+    Deploying to production would require a back&#8209;tested model trained on at least one
+    quarter of actual transaction data, with calibration adjustments per region.
+  </p>
+
+  <h3>6.2 No Online Feedback Loop</h3>
+  <p class="mb-4">
+    A production system would update <code>Auth_Rate_Stats</code> continuously from observed
+    authorization outcomes (EventBridge &rarr; SQS &rarr; stats&#8209;updater Lambda). This was
+    deliberately omitted to keep the academic focus on the routing decision itself. The
+    consequence is that the agent's auth&#8209;rate inputs cannot adapt to scheme&#8209;side
+    behaviour changes (e.g.&nbsp;new fraud heuristics) until the table is manually re&#8209;seeded.
+  </p>
+
+  <h3>6.3 Single Language Model Evaluated</h3>
+  <p class="mb-4">
+    Only Claude Sonnet&nbsp;4.6 was evaluated. A rigorous comparison would benchmark at least
+    Haiku&nbsp;4.5 (cost/latency trade&#8209;off), Opus&nbsp;4.7 (reasoning ceiling), and at
+    least one non&#8209;Anthropic model (e.g.&nbsp;Llama&nbsp;3.1 405B via Bedrock) on the same
+    fixed scenario set with a held&#8209;out evaluation harness. Output validity, JSON&#8209;schema
+    adherence, and reasoning&#8209;trace quality should all be measured.
+  </p>
+
+  <h3>6.4 No Live Scheme Connectivity</h3>
+  <p class="mb-4">
+    <code>MockSchemeGateway</code> stands in for real scheme processors (VisaNet, Banknet, etc.).
+    The routing decision is the contribution; integration with the scheme's authorization API
+    is mechanical but out of scope.
+  </p>
+
+  <h3>6.5 Limited BIN &amp; MCC Vocabulary</h3>
+  <p class="mb-4">
+    The BIN table contains ~17 representative prefixes covering FR / US / DE / CN. The ML model
+    recognises 10 ISO countries and 10 MCCs. Both are sufficient for the demo scenarios but
+    would need expansion to the full BIN universe (~half a million prefixes) and the full ISO
+    MCC list before any production assessment.
+  </p>
+
+  <h3>6.6 Cost Considerations</h3>
+  <p class="mb-4">
+    At Bedrock pricing for Sonnet&nbsp;4.6, each decision consumes roughly 2&ndash;4&thinsp;K
+    input tokens (system prompt + tool schemas + tool results) and 200&ndash;600 output tokens.
+    At &asymp;$0.003&ndash;$0.015 per decision, an LLM&#8209;in&#8209;the&#8209;loop architecture
+    is viable for low&#8209;volume / high&#8209;value flows but uneconomic for typical card
+    transaction volumes. A two&#8209;tier design (rule engine for &gt;99&thinsp;% of traffic,
+    LLM for ambiguous dual&#8209;brand cases) is a natural next step.
+  </p>
+
+  <h3>6.7 Bedrock Onboarding Friction</h3>
+  <p class="mb-4">
+    During development we encountered a stuck Anthropic use&#8209;case approval state on the
+    target AWS account, causing Bedrock to return <code>ThrottlingException</code> with a
+    misleading "too many tokens per day" message despite zero invocations. This is a known
+    operational hazard and an argument for production systems to maintain an explicit
+    fallback model (e.g.&nbsp;a cheaper non&#8209;Anthropic Bedrock model) for resilience.
+  </p>
+</section>

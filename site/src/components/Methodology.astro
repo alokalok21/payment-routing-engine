@@ -1,0 +1,107 @@
+---
+---
+<section id="methodology" class="paper-col py-10">
+  <p class="section-num">3 &middot; Methodology</p>
+  <h2>Agent Design &amp; ML Pipeline</h2>
+
+  <h3>3.1 ReAct Decision Process</h3>
+  <p class="mb-4">
+    The agent follows a deterministic 7&#8209;step procedure encoded in its system prompt. Each
+    step either invokes a tool or produces the final structured answer.
+  </p>
+
+  <ol class="list-decimal pl-6 mb-6 space-y-1.5 text-[1rem]">
+    <li><code>lookup_bin</code> &mdash; resolve eligible schemes, dual&#8209;brand flag, domestic hint.</li>
+    <li><code>get_scheme_status</code> &mdash; for each eligible scheme, exclude disabled.</li>
+    <li><code>get_scheme_auth_stats</code> &mdash; pre&#8209;seeded historical auth rate (7d / 30d).</li>
+    <li><code>estimate_interchange</code> &mdash; ML inference per enabled scheme.</li>
+    <li>Score each scheme (formula below); apply adaptive weights if high&#8209;risk.</li>
+    <li>Rank, pick the winner, build <code>fallback_chain</code>.</li>
+    <li>Emit strict JSON with rationale and full score breakdown.</li>
+  </ol>
+
+  <div class="bg-rule/40 border border-rule rounded-md p-5 my-6 font-mono text-[13px] leading-relaxed">
+score = (auth_rate_7d &times; w<sub>auth</sub>) &minus; (interchange_pct &times; w<sub>ic</sub> / 100)
+<br/><br/>
+Default weights&nbsp;&nbsp;: w<sub>auth</sub>=0.60, w<sub>ic</sub>=0.40
+<br/>
+High-risk weights: w<sub>auth</sub>=0.75, w<sub>ic</sub>=0.25
+<br/><br/>
+High-risk iff &nbsp;amount &gt; 1000&nbsp; OR&nbsp; cross_border == true
+  </div>
+
+  <h3>3.2 Tool Contracts</h3>
+  <p class="mb-4">
+    Tools are exposed to the Converse API as JSON Schema definitions. The agent receives typed
+    inputs and structured outputs &mdash; not free&#8209;form prose &mdash; which keeps the
+    reasoning grounded in deterministic services.
+  </p>
+
+  <div class="overflow-x-auto my-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="border-b border-rule text-left">
+          <th class="py-2 pr-4 font-sans font-semibold text-accent">Tool</th>
+          <th class="py-2 pr-4 font-sans font-semibold text-accent">Backed by</th>
+          <th class="py-2 font-sans font-semibold text-accent">Returns</th>
+        </tr>
+      </thead>
+      <tbody class="align-top">
+        <tr class="border-b border-rule/60">
+          <td class="py-3 pr-4 font-mono text-[12.5px]">lookup_bin</td>
+          <td class="py-3 pr-4">DynamoDB <code>BIN_Table</code></td>
+          <td class="py-3 text-muted">eligible_schemes[], card_type, card_product, issuer_country, dual_brand, domestic_scheme</td>
+        </tr>
+        <tr class="border-b border-rule/60">
+          <td class="py-3 pr-4 font-mono text-[12.5px]">get_scheme_status</td>
+          <td class="py-3 pr-4">DynamoDB <code>Scheme_Config</code></td>
+          <td class="py-3 text-muted">enabled (bool), display_name</td>
+        </tr>
+        <tr class="border-b border-rule/60">
+          <td class="py-3 pr-4 font-mono text-[12.5px]">get_scheme_auth_stats</td>
+          <td class="py-3 pr-4">DynamoDB <code>Auth_Rate_Stats</code></td>
+          <td class="py-3 text-muted">auth_rate_7d, auth_rate_30d, decline_breakdown, sample_count</td>
+        </tr>
+        <tr>
+          <td class="py-3 pr-4 font-mono text-[12.5px]">estimate_interchange</td>
+          <td class="py-3 pr-4">S3 ONNX (XGBoost)</td>
+          <td class="py-3 text-muted">estimated_interchange_pct, interchange_category, confidence, cross_border</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>3.3 ML Interchange Model</h3>
+  <p class="mb-4">
+    Interchange rates are predicted by an XGBoost regression trained on synthetic settlement
+    data parameterised from publicly known interchange tiers (EU regulated, US unregulated,
+    AMEX premium, UnionPay domestic). The model is exported to ONNX via
+    <code>onnxmltools</code> and loaded into Lambda at cold start via
+    <code>onnxruntime</code>; subsequent invocations reuse the cached session.
+  </p>
+
+  <div class="grid md:grid-cols-2 gap-x-8 gap-y-3 my-6 text-[15px]">
+    <div><span class="font-sans font-semibold text-accent">Training data</span> &middot; 25,000 synthetic rows, seed = 42</div>
+    <div><span class="font-sans font-semibold text-accent">Features</span> &middot; scheme, card_type, card_product, mcc, amount, merchant_country, card_country, cross_border</div>
+    <div><span class="font-sans font-semibold text-accent">Encoding</span> &middot; one&#8209;hot categoricals (46 features)</div>
+    <div><span class="font-sans font-semibold text-accent">Algorithm</span> &middot; XGBoost, 300 trees, depth 6, learning rate 0.08</div>
+    <div><span class="font-sans font-semibold text-accent">Loss</span> &middot; squared error</div>
+    <div><span class="font-sans font-semibold text-accent">Tree method</span> &middot; <code>hist</code></div>
+  </div>
+
+  <p class="mb-4">
+    Inference&#8209;time encoding mirrors training&#8209;time: the saved
+    <code>feature_metadata.json</code> stores the encoder vocabulary so the Lambda can produce
+    identical feature vectors. Unknown category values yield a zero vector for that block,
+    matching <code>OneHotEncoder(handle_unknown="ignore")</code>.
+  </p>
+
+  <h3>3.4 Explainability Contract</h3>
+  <p class="mb-4">
+    The agent must emit strict JSON with the following keys:
+    <code>selected_scheme</code>, <code>confidence</code>, <code>rationale</code>,
+    <code>fallback_chain[]</code>, <code>score_breakdown</code>. The Lambda parses and validates
+    every field; malformed output is rejected, ensuring downstream consumers receive a typed
+    decision object &mdash; never free&#8209;form prose.
+  </p>
+</section>

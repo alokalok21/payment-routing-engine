@@ -1,0 +1,129 @@
+---
+---
+<section id="architecture" class="wide-col py-10">
+  <div class="max-w-paper mx-auto">
+    <p class="section-num">2 &middot; System Architecture</p>
+    <h2>End&#8209;to&#8209;End AWS Serverless</h2>
+    <p class="mb-6">
+      The entire pipeline is serverless. An API Gateway endpoint invokes a single Python Lambda
+      that hosts the agent loop. The agent calls four tools backed by DynamoDB and a locally
+      loaded ONNX model. No network hop to a separate ML endpoint, no orchestration service.
+    </p>
+  </div>
+
+  <figure class="my-10">
+    <div class="bg-paper border border-rule rounded-lg p-6 md:p-10 overflow-x-auto">
+      <svg viewBox="0 0 900 480" class="w-full h-auto" role="img" aria-label="System architecture diagram">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#1E3A5F" />
+          </marker>
+          <style>
+            .box  { fill: #FFFFFF; stroke: #E5E1D8; stroke-width: 1.5; }
+            .box-accent { fill: #FFFFFF; stroke: #1E3A5F; stroke-width: 2; }
+            .box-ml { fill: #FFFFFF; stroke: #7C2D12; stroke-width: 2; }
+            .lbl   { font: 600 13px "Inter Tight", system-ui, sans-serif; fill: #1F2937; }
+            .lbl-sm{ font: 500 11px "Inter Tight", system-ui, sans-serif; fill: #6B7280; }
+            .lbl-em{ font: 700 12px "Inter Tight", system-ui, sans-serif; fill: #1E3A5F; }
+            .link  { stroke: #1E3A5F; stroke-width: 1.5; fill: none; }
+            .group { fill: none; stroke: #E5E1D8; stroke-width: 1; stroke-dasharray: 4 4; }
+          </style>
+        </defs>
+
+        <!-- Client -->
+        <rect x="20"  y="30"  width="120" height="50" rx="8" class="box" />
+        <text x="80" y="55" text-anchor="middle" class="lbl">Client</text>
+        <text x="80" y="70" text-anchor="middle" class="lbl-sm">POS / test</text>
+
+        <!-- API Gateway -->
+        <rect x="180" y="30"  width="140" height="50" rx="8" class="box" />
+        <text x="250" y="55" text-anchor="middle" class="lbl">API Gateway</text>
+        <text x="250" y="70" text-anchor="middle" class="lbl-sm">POST /route</text>
+
+        <!-- Lambda -->
+        <rect x="360" y="30"  width="140" height="50" rx="8" class="box" />
+        <text x="430" y="55" text-anchor="middle" class="lbl">routing_handler</text>
+        <text x="430" y="70" text-anchor="middle" class="lbl-sm">Python 3.13 Lambda</text>
+
+        <!-- Mock gateway -->
+        <rect x="540" y="30"  width="140" height="50" rx="8" class="box" />
+        <text x="610" y="55" text-anchor="middle" class="lbl">MockSchemeGateway</text>
+        <text x="610" y="70" text-anchor="middle" class="lbl-sm">simulated auth</text>
+
+        <!-- Agent box (accent) -->
+        <rect x="200" y="140" width="500" height="80" rx="10" class="box-accent" />
+        <text x="450" y="165" text-anchor="middle" class="lbl-em">★ BedrockRoutingAgent &middot; AI Core ★</text>
+        <text x="450" y="183" text-anchor="middle" class="lbl-sm">Converse API ReAct loop &middot; Claude Sonnet 4.6</text>
+        <text x="450" y="202" text-anchor="middle" class="lbl-sm">AgentToolDispatcher routes 4 toolUse blocks</text>
+
+        <!-- Tools group -->
+        <rect x="60"  y="280" width="780" height="110" rx="10" class="group" />
+        <text x="80"  y="298" class="lbl-sm">Agent tools</text>
+
+        <rect x="80"  y="310" width="170" height="60" rx="6" class="box" />
+        <text x="165" y="333" text-anchor="middle" class="lbl">lookup_bin</text>
+        <text x="165" y="350" text-anchor="middle" class="lbl-sm">BIN_Table</text>
+
+        <rect x="270" y="310" width="170" height="60" rx="6" class="box" />
+        <text x="355" y="333" text-anchor="middle" class="lbl">get_scheme_status</text>
+        <text x="355" y="350" text-anchor="middle" class="lbl-sm">Scheme_Config</text>
+
+        <rect x="460" y="310" width="170" height="60" rx="6" class="box" />
+        <text x="545" y="333" text-anchor="middle" class="lbl">get_scheme_auth_stats</text>
+        <text x="545" y="350" text-anchor="middle" class="lbl-sm">Auth_Rate_Stats</text>
+
+        <rect x="650" y="310" width="170" height="60" rx="6" class="box-ml" />
+        <text x="735" y="333" text-anchor="middle" class="lbl">estimate_interchange</text>
+        <text x="735" y="350" text-anchor="middle" class="lbl-sm">★ ONNX (XGBoost) ★</text>
+
+        <!-- Data layer -->
+        <rect x="80"  y="410" width="170" height="50" rx="6" class="box" />
+        <text x="165" y="435" text-anchor="middle" class="lbl-sm">DynamoDB &middot; BIN_Table</text>
+
+        <rect x="270" y="410" width="170" height="50" rx="6" class="box" />
+        <text x="355" y="435" text-anchor="middle" class="lbl-sm">DynamoDB &middot; Scheme_Config</text>
+
+        <rect x="460" y="410" width="170" height="50" rx="6" class="box" />
+        <text x="545" y="435" text-anchor="middle" class="lbl-sm">DynamoDB &middot; Auth_Rate_Stats</text>
+
+        <rect x="650" y="410" width="170" height="50" rx="6" class="box" />
+        <text x="735" y="435" text-anchor="middle" class="lbl-sm">S3 &middot; interchange_model.onnx</text>
+
+        <!-- Arrows: top row -->
+        <line x1="140" y1="55" x2="180" y2="55" class="link" marker-end="url(#arrow)" />
+        <line x1="320" y1="55" x2="360" y2="55" class="link" marker-end="url(#arrow)" />
+        <line x1="500" y1="55" x2="540" y2="55" class="link" marker-end="url(#arrow)" />
+
+        <!-- Lambda <-> Agent -->
+        <line x1="430" y1="80" x2="430" y2="140" class="link" marker-end="url(#arrow)" />
+        <line x1="450" y1="220" x2="450" y2="245" class="link" />
+
+        <!-- Agent fans out to tools -->
+        <path d="M 450 245 L 165 310" class="link" marker-end="url(#arrow)" />
+        <path d="M 450 245 L 355 310" class="link" marker-end="url(#arrow)" />
+        <path d="M 450 245 L 545 310" class="link" marker-end="url(#arrow)" />
+        <path d="M 450 245 L 735 310" class="link" marker-end="url(#arrow)" />
+
+        <!-- Tools -> data -->
+        <line x1="165" y1="370" x2="165" y2="410" class="link" marker-end="url(#arrow)" />
+        <line x1="355" y1="370" x2="355" y2="410" class="link" marker-end="url(#arrow)" />
+        <line x1="545" y1="370" x2="545" y2="410" class="link" marker-end="url(#arrow)" />
+        <line x1="735" y1="370" x2="735" y2="410" class="link" marker-end="url(#arrow)" />
+      </svg>
+    </div>
+    <figcaption class="text-center text-muted font-sans text-sm mt-3">
+      Figure 1 &middot; All components run within a single AWS account (us-east-1).
+      The ONNX model is loaded into Lambda memory at cold start &mdash; no out-of-process inference call.
+    </figcaption>
+  </figure>
+
+  <div class="max-w-paper mx-auto">
+    <h3>Design Choices</h3>
+    <ul class="list-disc pl-6 mb-4 space-y-2">
+      <li><strong>ONNX over SageMaker endpoint</strong> &mdash; eliminates a network hop and keeps p99 latency below 500&thinsp;ms.</li>
+      <li><strong>Pre&#8209;seeded synthetic stats</strong> &mdash; the academic focus is the routing <em>decision</em>, not the feedback&#8209;loop infrastructure (EventBridge / SQS / stats updater) that would refresh those stats in production.</li>
+      <li><strong>MockSchemeGateway</strong> &mdash; real scheme connectivity (VisaNet, Banknet) is intentionally out of scope.</li>
+      <li><strong>ReAct over single&#8209;shot prompt</strong> &mdash; the agent can adapt mid&#8209;loop (e.g. exclude a disabled scheme).</li>
+    </ul>
+  </div>
+</section>

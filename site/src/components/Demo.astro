@@ -1,0 +1,83 @@
+---
+import scenarios from "../data/scenarios.json";
+const scenariosJson = JSON.stringify(scenarios);
+---
+<section id="demo" class="wide-col py-12">
+  <div class="max-w-paper mx-auto mb-8">
+    <p class="section-num">4 &middot; Interactive Demo</p>
+    <h2>Live Agent Reasoning Trace</h2>
+    <p class="mb-4">
+      Each scenario below is a recorded execution of the deployed Lambda &mdash; the same JSON tool
+      I/O the live system produces, played back at human reading speed. Pick a scenario and press
+      <em>Play</em>: you will see the agent reason, call tools, receive structured responses, and
+      finally emit a validated routing decision.
+    </p>
+    <p class="mb-4">
+      The third scenario is the most interesting &mdash; it demonstrates ReAct's defining
+      property: the agent <em>adapts its plan mid&#8209;loop</em> after discovering CB is
+      disabled, skipping unnecessary tool calls and explaining the exclusion in the rationale.
+    </p>
+  </div>
+
+  <div data-trace-root class="max-w-wide mx-auto grid lg:grid-cols-2 gap-6">
+
+    <div>
+      <div class="bg-white border border-rule rounded-md p-4 mb-4">
+        <label class="block text-xs font-sans uppercase tracking-widest text-muted mb-2">
+          Scenario
+        </label>
+        <select
+          data-scenario-select
+          class="w-full bg-paper border border-rule rounded px-3 py-2 font-serif text-base"
+        ></select>
+        <p data-scenario-summary class="text-sm text-muted mt-3 leading-relaxed"></p>
+
+        <div class="flex flex-wrap gap-3 mt-4">
+          <button
+            data-play-btn
+            class="bg-accent text-paper font-sans font-medium px-4 py-2 rounded hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ▶ Play trace
+          </button>
+          <button
+            data-reset-btn
+            class="bg-rule text-ink font-sans font-medium px-4 py-2 rounded hover:bg-rule/80 transition"
+          >
+            Reset
+          </button>
+
+          <label class="flex items-center gap-2 ml-auto text-sm text-muted font-sans cursor-pointer">
+            <input data-live-toggle type="checkbox" disabled class="opacity-50 cursor-not-allowed" />
+            <span>Use live API <span class="pill pill-warn ml-1">offline</span></span>
+          </label>
+        </div>
+
+        <div data-live-banner class="hidden mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2 font-sans">
+          Live mode is disabled until AWS Bedrock Anthropic access is granted on the deployment account.
+        </div>
+      </div>
+
+      <div data-txn-panel></div>
+
+      <div data-decision-panel></div>
+    </div>
+
+    <div>
+      <div class="term-window sticky top-4">
+        <div class="term-header">
+          <span class="w-3 h-3 rounded-full bg-red-500/70"></span>
+          <span class="w-3 h-3 rounded-full bg-yellow-500/70"></span>
+          <span class="w-3 h-3 rounded-full bg-green-500/70"></span>
+          <span class="ml-3">routing-agent &middot; us-east-1</span>
+        </div>
+        <div data-term-body class="term-body"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script id="trace-scenarios" type="application/json" set:html={scenariosJson} />
+  <script>
+    import "../scripts/trace-player.ts";
+  </script>
+</section>

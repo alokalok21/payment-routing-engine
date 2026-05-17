@@ -1,0 +1,29 @@
+---
+---
+<section id="abstract" class="paper-col py-10">
+  <p class="section-num">Abstract</p>
+  <div class="border-l-2 border-rule pl-6">
+    <p class="mb-4">
+      When a card BIN is dual&#8209;branded (e.g.&nbsp;Visa and Cartes Bancaires on a French issuer), the
+      acquiring bank must choose <em>which</em> scheme receives the authorization request. The
+      decision is a multi&#8209;objective problem: maximize the expected authorization rate while
+      minimizing the interchange cost &mdash; objectives that frequently conflict and whose ideal
+      trade&#8209;off varies with transaction context (amount, cross&#8209;border, MCC risk profile).
+    </p>
+    <p class="mb-4">
+      We present an end&#8209;to&#8209;end serverless prototype in which an LLM agent (AWS Bedrock,
+      Claude Sonnet&nbsp;4.6) executes a ReAct (<em>Reason + Act</em>) tool&#8209;use loop over four
+      domain tools backed by DynamoDB and an in&#8209;Lambda XGBoost&#8209;to&#8209;ONNX regression
+      model. The agent emits a structured, explainable decision &mdash; selected scheme,
+      confidence, ranked fallback chain, and per&#8209;scheme score breakdown &mdash; using adaptive
+      weights that shift toward authorization rate for high&#8209;risk transactions.
+    </p>
+    <p>
+      The interchange model achieves <strong>MAE&nbsp;0.039&thinsp;%</strong>,
+      <strong>RMSE&nbsp;0.054&thinsp;%</strong>, and <strong>R&sup2;&nbsp;0.9988</strong> on a
+      held&#8209;out split of 25,000 synthetic settlement records. The system is deployed to AWS
+      via SAM (Lambda + API&nbsp;Gateway + DynamoDB + S3) and reproduces three published demo
+      scenarios with explainable rationales.
+    </p>
+  </div>
+</section>

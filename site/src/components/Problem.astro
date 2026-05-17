@@ -1,0 +1,50 @@
+---
+---
+<section id="problem" class="paper-col py-10">
+  <p class="section-num">1 &middot; Problem &amp; Motivation</p>
+  <h2>The Routing Decision</h2>
+  <p class="mb-4">
+    Card networks (Visa, Mastercard, CB, Discover, UnionPay, Amex, Maestro) compete on two
+    dimensions that matter to the acquirer:
+  </p>
+  <ul class="list-disc pl-6 mb-6 space-y-2">
+    <li>
+      <strong>Authorization rate</strong> &mdash; the probability that the issuer approves the
+      transaction. Schemes differ by issuer relationship, fraud heuristics, MCC tolerance, and
+      cross&#8209;border posture.
+    </li>
+    <li>
+      <strong>Interchange cost</strong> &mdash; the fee the acquirer pays per transaction.
+      Regulated domestic rates (EU CB: ~0.3&thinsp;%) differ sharply from unregulated
+      cross&#8209;border rates (Visa/MC US: ~1.5&thinsp;%, Amex: ~2.5&thinsp;%).
+    </li>
+  </ul>
+
+  <h3>Dual-Brand Cards</h3>
+  <p class="mb-4">
+    Roughly <strong>40&thinsp;%</strong> of French issued cards are dual&#8209;branded
+    Visa+CB; many U.S. debit cards are Discover+Mastercard; certain Chinese cards are
+    UnionPay+Mastercard. The acquiring bank therefore has a real choice on each authorization
+    &mdash; and that choice has measurable revenue impact.
+  </p>
+
+  <div class="pull-quote my-8">
+    A 0.6&thinsp;% interchange spread on a &euro;150 transaction is &euro;0.90.
+    Across 10&thinsp;M monthly dual&#8209;brand transactions, that is &euro;9&thinsp;M / month
+    of acquirer margin attributable to the routing decision alone.
+  </div>
+
+  <h3>Why an LLM Agent?</h3>
+  <p class="mb-4">
+    Hard&#8209;coded rule engines are common in production but brittle: every new scheme,
+    regulatory change, or fraud pattern requires a code release. We argue that an
+    LLM&#8209;driven <em>tool&#8209;use loop</em> is a strong alternative for this class of
+    problem because:
+  </p>
+  <ol class="list-decimal pl-6 mb-4 space-y-2">
+    <li>The decision is small (one transaction, &lt;10 tool calls) but contextual.</li>
+    <li>Explainability is a hard requirement &mdash; the LLM produces the rationale natively.</li>
+    <li>Most of the heavy lifting (auth&#8209;rate stats, interchange estimation) is delegated
+        to deterministic services. The LLM is the <em>policy</em>, not the data store.</li>
+  </ol>
+</section>

@@ -1,0 +1,143 @@
+[
+  {
+    "id": "fr-domestic-grocery",
+    "label": "FR dual-brand grocery (€150)",
+    "summary": "BNP Paribas Visa+CB co-branded card at a French grocer. Default weights. CB wins on both lower interchange and slightly higher auth — clean outcome.",
+    "transaction": {
+      "transaction_id": "txn-fr-001",
+      "bin": "476173",
+      "last4": "9999",
+      "card_type": "CREDIT",
+      "amount": 150.00,
+      "currency": "EUR",
+      "mcc": "5411",
+      "merchant_country": "FR",
+      "card_country": "FR"
+    },
+    "expected_outcome": { "winner": "CB", "weights": "default" },
+    "steps": [
+      { "type": "thought", "text": "Transaction is a €150 EUR purchase at MCC 5411 (grocery), merchant FR, card FR. Domestic. Amount is in the 50–200 bucket. cross_border=false. Starting with the BIN lookup." },
+      { "type": "tool_call",   "id": "t1", "tool": "lookup_bin", "input": { "bin": "476173" } },
+      { "type": "tool_result", "id": "t1", "output": { "bin_prefix": "476173", "eligible_schemes": ["VISA", "CB"], "card_type": "CREDIT", "card_product": "CLASSIC", "issuer_country": "FR", "issuer_bank": "BNP Paribas", "dual_brand": true, "domestic_scheme": "CB" } },
+      { "type": "thought", "text": "Dual-brand Visa+CB card, FR issuer, CLASSIC credit. Both schemes need a status check before I score them." },
+      { "type": "tool_call",   "id": "t2", "tool": "get_scheme_status", "input": { "scheme_id": "VISA" } },
+      { "type": "tool_result", "id": "t2", "output": { "scheme_id": "VISA", "display_name": "Visa", "enabled": true } },
+      { "type": "tool_call",   "id": "t3", "tool": "get_scheme_status", "input": { "scheme_id": "CB" } },
+      { "type": "tool_result", "id": "t3", "output": { "scheme_id": "CB", "display_name": "Cartes Bancaires", "enabled": true } },
+      { "type": "thought", "text": "Both enabled. Pulling auth-rate stats for the (scheme, BIN bucket 4761, MCC 5411, EUR, 50–200) profile." },
+      { "type": "tool_call",   "id": "t4", "tool": "get_scheme_auth_stats", "input": { "scheme_id": "VISA", "bin_bucket": "4761", "mcc": "5411", "currency": "EUR", "amount_bucket": "50-200" } },
+      { "type": "tool_result", "id": "t4", "output": { "scheme_id": "VISA", "bin_bucket": "4761", "mcc": "5411", "currency": "EUR", "amount_bucket": "50-200", "auth_rate_7d": 0.941, "auth_rate_30d": 0.939, "sample_count": 24105 } },
+      { "type": "tool_call",   "id": "t5", "tool": "get_scheme_auth_stats", "input": { "scheme_id": "CB", "bin_bucket": "4761", "mcc": "5411", "currency": "EUR", "amount_bucket": "50-200" } },
+      { "type": "tool_result", "id": "t5", "output": { "scheme_id": "CB", "bin_bucket": "4761", "mcc": "5411", "currency": "EUR", "amount_bucket": "50-200", "auth_rate_7d": 0.948, "auth_rate_30d": 0.946, "sample_count": 28640 } },
+      { "type": "thought", "text": "Now interchange estimates from the ML model." },
+      { "type": "tool_call",   "id": "t6", "tool": "estimate_interchange", "input": { "scheme_id": "VISA", "card_type": "CREDIT", "card_product": "CLASSIC", "mcc": "5411", "amount": 150.0, "merchant_country": "FR", "card_country": "FR" } },
+      { "type": "tool_result", "id": "t6", "output": { "scheme_id": "VISA", "estimated_interchange_pct": 0.428, "interchange_category": "domestic-low", "confidence": 0.95, "cross_border": false } },
+      { "type": "tool_call",   "id": "t7", "tool": "estimate_interchange", "input": { "scheme_id": "CB", "card_type": "CREDIT", "card_product": "CLASSIC", "mcc": "5411", "amount": 150.0, "merchant_country": "FR", "card_country": "FR" } },
+      { "type": "tool_result", "id": "t7", "output": { "scheme_id": "CB", "estimated_interchange_pct": 0.244, "interchange_category": "domestic-low", "confidence": 0.95, "cross_border": false } },
+      { "type": "thought", "text": "amount=150 (≤1000) and cross_border=false → default weights (0.6 / 0.4). Scoring:\nVISA: 0.941×0.6 − 0.00428×0.4 = 0.56488\nCB:   0.948×0.6 − 0.00244×0.4 = 0.56782\nCB wins by 0.0029. Domestic FR + CB-preferred BIN reinforces the choice. Confidence 0.89 (small margin)." },
+      { "type": "final", "decision": {
+          "selected_scheme": "CB",
+          "confidence": 0.89,
+          "rationale": "Dual-branded Visa/CB card from BNP Paribas (FR issuer); both schemes enabled. CB shows marginally higher auth (94.8% vs 94.1%) and materially lower interchange (0.244% vs 0.428%). Default weights (0.6/0.4) apply — domestic, amount=€150. CB scores 0.568 vs VISA 0.565. Domestic CB preference also documented in BIN_Table aligns with the choice.",
+          "fallback_chain": [ { "scheme": "VISA", "reason": "Second highest score; strong international auth-rate baseline." } ],
+          "score_breakdown": {
+            "CB":   { "auth_rate": 0.948, "estimated_interchange_pct": 0.244, "score": 0.5678, "weight_auth": 0.6, "weight_ic": 0.4 },
+            "VISA": { "auth_rate": 0.941, "estimated_interchange_pct": 0.428, "score": 0.5649, "weight_auth": 0.6, "weight_ic": 0.4 }
+          }
+        }
+      }
+    ],
+    "mock_auth_result": "APPROVED"
+  },
+  {
+    "id": "cross-border-high-value",
+    "label": "Cross-border travel high-value ($2,500)",
+    "summary": "Same Visa+CB card used at a US travel agent for $2,500. High-risk weights kick in. VISA wins on cross-border auth resilience despite higher interchange.",
+    "transaction": {
+      "transaction_id": "txn-xb-001",
+      "bin": "476173",
+      "last4": "9999",
+      "card_type": "CREDIT",
+      "amount": 2500.00,
+      "currency": "USD",
+      "mcc": "4722",
+      "merchant_country": "US",
+      "card_country": "FR"
+    },
+    "expected_outcome": { "winner": "VISA", "weights": "high-risk" },
+    "steps": [
+      { "type": "thought", "text": "Amount=$2500, MCC 4722 (travel agencies), merchant US, card FR. cross_border=true AND amount>1000 — high-risk path. Amount bucket = 1000+." },
+      { "type": "tool_call",   "id": "t1", "tool": "lookup_bin", "input": { "bin": "476173" } },
+      { "type": "tool_result", "id": "t1", "output": { "bin_prefix": "476173", "eligible_schemes": ["VISA", "CB"], "card_type": "CREDIT", "card_product": "CLASSIC", "issuer_country": "FR", "issuer_bank": "BNP Paribas", "dual_brand": true, "domestic_scheme": "CB" } },
+      { "type": "tool_call",   "id": "t2", "tool": "get_scheme_status", "input": { "scheme_id": "VISA" } },
+      { "type": "tool_result", "id": "t2", "output": { "scheme_id": "VISA", "display_name": "Visa", "enabled": true } },
+      { "type": "tool_call",   "id": "t3", "tool": "get_scheme_status", "input": { "scheme_id": "CB" } },
+      { "type": "tool_result", "id": "t3", "output": { "scheme_id": "CB", "display_name": "Cartes Bancaires", "enabled": true } },
+      { "type": "tool_call",   "id": "t4", "tool": "get_scheme_auth_stats", "input": { "scheme_id": "VISA", "bin_bucket": "4761", "mcc": "4722", "currency": "USD", "amount_bucket": "1000+" } },
+      { "type": "tool_result", "id": "t4", "output": { "scheme_id": "VISA", "bin_bucket": "4761", "mcc": "4722", "currency": "USD", "amount_bucket": "1000+", "auth_rate_7d": 0.852, "auth_rate_30d": 0.847, "sample_count": 1820 } },
+      { "type": "tool_call",   "id": "t5", "tool": "get_scheme_auth_stats", "input": { "scheme_id": "CB", "bin_bucket": "4761", "mcc": "4722", "currency": "USD", "amount_bucket": "1000+" } },
+      { "type": "tool_result", "id": "t5", "output": { "scheme_id": "CB", "bin_bucket": "4761", "mcc": "4722", "currency": "USD", "amount_bucket": "1000+", "auth_rate_7d": 0.808, "auth_rate_30d": 0.802, "sample_count": 940 } },
+      { "type": "thought", "text": "CB cross-border auth (80.8%) is materially worse than VISA's (85.2%) — VISA has stronger international acceptance. Now interchange." },
+      { "type": "tool_call",   "id": "t6", "tool": "estimate_interchange", "input": { "scheme_id": "VISA", "card_type": "CREDIT", "card_product": "CLASSIC", "mcc": "4722", "amount": 2500.0, "merchant_country": "US", "card_country": "FR" } },
+      { "type": "tool_result", "id": "t6", "output": { "scheme_id": "VISA", "estimated_interchange_pct": 1.529, "interchange_category": "cross-border-std", "confidence": 0.95, "cross_border": true } },
+      { "type": "tool_call",   "id": "t7", "tool": "estimate_interchange", "input": { "scheme_id": "CB", "card_type": "CREDIT", "card_product": "CLASSIC", "mcc": "4722", "amount": 2500.0, "merchant_country": "US", "card_country": "FR" } },
+      { "type": "tool_result", "id": "t7", "output": { "scheme_id": "CB", "estimated_interchange_pct": 0.954, "interchange_category": "cross-border-std", "confidence": 0.95, "cross_border": true } },
+      { "type": "thought", "text": "amount>1000 AND cross_border=true → high-risk weights (0.75 / 0.25).\nVISA: 0.852×0.75 − 0.01529×0.25 = 0.6352\nCB:   0.808×0.75 − 0.00954×0.25 = 0.6036\nVISA wins by 0.0316 — auth-rate dominates at these weights. CB stays in fallback. Confidence 0.92 (high — clear gap)." },
+      { "type": "final", "decision": {
+          "selected_scheme": "VISA",
+          "confidence": 0.92,
+          "rationale": "Cross-border high-value transaction (US merchant, FR card, $2500). High-risk weights applied (0.75/0.25) — authorization rate dominates the score. VISA's cross-border auth (85.2%) materially exceeds CB's (80.8%); CB's lower interchange (0.954% vs 1.529%) is insufficient to offset the auth-rate gap at these weights. VISA scores 0.635 vs CB 0.604.",
+          "fallback_chain": [ { "scheme": "CB", "reason": "Lower interchange but weaker cross-border auth; viable if VISA returns DECLINED." } ],
+          "score_breakdown": {
+            "VISA": { "auth_rate": 0.852, "estimated_interchange_pct": 1.529, "score": 0.6352, "weight_auth": 0.75, "weight_ic": 0.25 },
+            "CB":   { "auth_rate": 0.808, "estimated_interchange_pct": 0.954, "score": 0.6036, "weight_auth": 0.75, "weight_ic": 0.25 }
+          }
+        }
+      }
+    ],
+    "mock_auth_result": "APPROVED"
+  },
+  {
+    "id": "cb-disabled-adaptive",
+    "label": "CB scheme disabled — agent adapts mid-loop",
+    "summary": "Same Scenario 1 transaction, but CB has been disabled in Scheme_Config. The agent discovers this mid-loop, excludes CB from scoring entirely, and falls back to VISA — explaining the exclusion in its rationale. This is the canonical ReAct adaptation example.",
+    "transaction": {
+      "transaction_id": "txn-fr-cb-off-001",
+      "bin": "476173",
+      "last4": "9999",
+      "card_type": "CREDIT",
+      "amount": 150.00,
+      "currency": "EUR",
+      "mcc": "5411",
+      "merchant_country": "FR",
+      "card_country": "FR"
+    },
+    "expected_outcome": { "winner": "VISA", "weights": "default", "note": "CB excluded" },
+    "steps": [
+      { "type": "thought", "text": "Same FR-domestic profile as Scenario 1. Looking up BIN first to confirm eligible schemes." },
+      { "type": "tool_call",   "id": "t1", "tool": "lookup_bin", "input": { "bin": "476173" } },
+      { "type": "tool_result", "id": "t1", "output": { "bin_prefix": "476173", "eligible_schemes": ["VISA", "CB"], "card_type": "CREDIT", "card_product": "CLASSIC", "issuer_country": "FR", "issuer_bank": "BNP Paribas", "dual_brand": true, "domestic_scheme": "CB" } },
+      { "type": "tool_call",   "id": "t2", "tool": "get_scheme_status", "input": { "scheme_id": "VISA" } },
+      { "type": "tool_result", "id": "t2", "output": { "scheme_id": "VISA", "display_name": "Visa", "enabled": true } },
+      { "type": "tool_call",   "id": "t3", "tool": "get_scheme_status", "input": { "scheme_id": "CB" } },
+      { "type": "tool_result", "id": "t3", "output": { "scheme_id": "CB", "display_name": "Cartes Bancaires", "enabled": false } },
+      { "type": "thought", "text": "CB is disabled — excluding it from auth-stats and interchange queries entirely (saves two tool calls). Only VISA will be scored." },
+      { "type": "tool_call",   "id": "t4", "tool": "get_scheme_auth_stats", "input": { "scheme_id": "VISA", "bin_bucket": "4761", "mcc": "5411", "currency": "EUR", "amount_bucket": "50-200" } },
+      { "type": "tool_result", "id": "t4", "output": { "scheme_id": "VISA", "bin_bucket": "4761", "mcc": "5411", "currency": "EUR", "amount_bucket": "50-200", "auth_rate_7d": 0.941, "auth_rate_30d": 0.939, "sample_count": 24105 } },
+      { "type": "tool_call",   "id": "t5", "tool": "estimate_interchange", "input": { "scheme_id": "VISA", "card_type": "CREDIT", "card_product": "CLASSIC", "mcc": "5411", "amount": 150.0, "merchant_country": "FR", "card_country": "FR" } },
+      { "type": "tool_result", "id": "t5", "output": { "scheme_id": "VISA", "estimated_interchange_pct": 0.428, "interchange_category": "domestic-low", "confidence": 0.95, "cross_border": false } },
+      { "type": "thought", "text": "Default weights — only VISA in play. Score: 0.941×0.6 − 0.00428×0.4 = 0.56488. No fallback (CB disabled, no other eligible schemes for this BIN). Confidence 0.96 — the choice is forced but the candidate is healthy." },
+      { "type": "final", "decision": {
+          "selected_scheme": "VISA",
+          "confidence": 0.96,
+          "rationale": "Dual-branded BIN (Visa + CB) but CB is currently disabled in Scheme_Config. CB excluded from scoring entirely. VISA is the only enabled candidate: auth_rate_7d=94.1%, est. interchange=0.428% (domestic FR, CLASSIC CREDIT). Default weights applied. No fallback available since CB is the only alternative and is disabled.",
+          "fallback_chain": [],
+          "score_breakdown": {
+            "VISA": { "auth_rate": 0.941, "estimated_interchange_pct": 0.428, "score": 0.5649, "weight_auth": 0.6, "weight_ic": 0.4 }
+          }
+        }
+      }
+    ],
+    "mock_auth_result": "APPROVED"
+  }
+]

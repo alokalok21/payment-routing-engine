@@ -1,0 +1,81 @@
+---
+const refs = [
+  {
+    num: 1,
+    citation: 'Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2022). ReAct: Synergizing Reasoning and Acting in Language Models. arXiv:2210.03629.',
+    href: "https://arxiv.org/abs/2210.03629",
+  },
+  {
+    num: 2,
+    citation: "Chen, T., & Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. KDD ’16 (pp. 785–794).",
+    href: "https://dl.acm.org/doi/10.1145/2939672.2939785",
+  },
+  {
+    num: 3,
+    citation: "Open Neural Network Exchange (ONNX). Linux Foundation AI & Data project.",
+    href: "https://onnx.ai/",
+  },
+  {
+    num: 4,
+    citation: "Anthropic. Tool use with Claude (Bedrock Converse API).",
+    href: "https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html",
+  },
+  {
+    num: 5,
+    citation: "European Parliament & Council. Regulation (EU) 2015/751 — Interchange fee regulation (IFR).",
+    href: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32015R0751",
+  },
+  {
+    num: 6,
+    citation: "AWS. Building serverless applications with AWS SAM.",
+    href: "https://docs.aws.amazon.com/serverless-application-model/",
+  },
+];
+---
+<section id="references" class="paper-col py-10">
+  <p class="section-num">7 &middot; References &amp; Acknowledgments</p>
+  <h2>References</h2>
+  <ol class="space-y-3 text-[15px] leading-relaxed">
+    {refs.map(r => (
+      <li class="flex items-start">
+        <span class="ref-num">{r.num}</span>
+        <span class="flex-1">
+          {r.citation}
+          {r.href && (
+            <>
+              {" "}
+              <a href={r.href} target="_blank" rel="noopener noreferrer" class="text-accent break-all">
+                {r.href}
+              </a>
+            </>
+          )}
+        </span>
+      </li>
+    ))}
+  </ol>
+
+  <h2 class="mt-12">Code &amp; Data Availability</h2>
+  <p class="mb-3">
+    All source code, infrastructure templates, seed data, and the pre&#8209;trained ONNX model
+    are available at:
+  </p>
+  <p class="mb-4">
+    <a href="https://github.com/alokalok21/payment-routing-engine" target="_blank" rel="noopener noreferrer" class="font-mono">
+      github.com/alokalok21/payment-routing-engine
+    </a>
+  </p>
+  <p class="mb-4">
+    The repository includes the AWS SAM template, the XGBoost training script, the
+    Lambda&#8209;ready ONNX artifact, the system prompt, and the full unit test suite (17 tests,
+    using <code>moto</code> for DynamoDB mocking and a scripted fake Bedrock client for the
+    ReAct&#8209;loop tests).
+  </p>
+
+  <h2 class="mt-12">Acknowledgments</h2>
+  <p class="mb-4">
+    We thank the Executive Post&#8209;Graduate Diploma program at IIT Bombay for the academic
+    framing of this work. The architecture benefits from the AWS Well&#8209;Architected
+    Serverless lens and Anthropic's published guidance on structured tool use with the
+    Converse API.
+  </p>
+</section>

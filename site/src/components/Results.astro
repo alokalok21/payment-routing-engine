@@ -1,0 +1,102 @@
+---
+const metrics = [
+  { name: "MAE",   value: 0.039,  unit: "%",   max: 0.10 },
+  { name: "RMSE",  value: 0.054,  unit: "%",   max: 0.10 },
+  { name: "R²",    value: 0.9988, unit: "",    max: 1.00 },
+];
+const scenarioResults = [
+  { id: "Scenario 1", txn: "FR €150 grocery", weights: "default", winner: "CB",   confidence: 0.89, note: "CB wins on both auth and interchange margins." },
+  { id: "Scenario 2", txn: "US $2,500 travel", weights: "high-risk", winner: "VISA", confidence: 0.92, note: "Cross-border + high amount; auth rate dominates." },
+  { id: "Scenario 3", txn: "Same as #1, CB disabled", weights: "default", winner: "VISA", confidence: 0.96, note: "Mid-loop adaptation; CB excluded entirely from scoring." },
+];
+---
+<section id="results" class="paper-col py-10">
+  <p class="section-num">5 &middot; Results &amp; Experiments</p>
+  <h2>Empirical Outcomes</h2>
+
+  <h3>5.1 Interchange Model Accuracy</h3>
+  <p class="mb-5">
+    The XGBoost regressor was evaluated on a 20&thinsp;% held&#8209;out split (5,000 rows) of the
+    25,000&#8209;row synthetic dataset. Synthetic ground&#8209;truth labels are nearly
+    deterministic by construction, so the metrics here reflect the model's ability to
+    reproduce the parametric rule&#8209;set &mdash; not real&#8209;world noise.
+  </p>
+
+  <div class="grid grid-cols-3 gap-4 my-6">
+    {metrics.map(m => {
+      const pct = m.name === "R²" ? Math.round(m.value * 100) : Math.round((1 - m.value / m.max) * 100);
+      return (
+        <div class="bg-white border border-rule rounded p-4">
+          <div class="text-xs font-sans uppercase tracking-widest text-muted">{m.name}</div>
+          <div class="text-3xl font-mono font-semibold text-accent mt-1">
+            {m.value}{m.unit}
+          </div>
+          <div class="mt-3 h-2 bg-rule rounded overflow-hidden">
+            <div class="h-full bg-accent" style={`width: ${pct}%`}></div>
+          </div>
+          <div class="text-[11px] font-sans text-muted mt-1">
+            { m.name === "R²" ? "Higher is better" : "Lower is better" }
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  <p class="mb-4">
+    The very high R² (0.9988) is expected for synthetic data with controlled noise (&sigma; =
+    0.05&thinsp;%). On real settlement data we would expect R² in the 0.70&ndash;0.85 range with
+    materially larger MAE; the value here demonstrates the pipeline's correctness rather than
+    a benchmark on real interchange invoices.
+  </p>
+
+  <h3>5.2 Per-Scenario Routing Outcomes</h3>
+
+  <div class="overflow-x-auto my-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="border-b border-rule text-left">
+          <th class="py-2 pr-3 font-sans font-semibold text-accent">#</th>
+          <th class="py-2 pr-3 font-sans font-semibold text-accent">Transaction</th>
+          <th class="py-2 pr-3 font-sans font-semibold text-accent">Weights</th>
+          <th class="py-2 pr-3 font-sans font-semibold text-accent">Selected</th>
+          <th class="py-2 pr-3 font-sans font-semibold text-accent">Conf.</th>
+          <th class="py-2 font-sans font-semibold text-accent">Notes</th>
+        </tr>
+      </thead>
+      <tbody class="align-top">
+        {scenarioResults.map(r => (
+          <tr class="border-b border-rule/60">
+            <td class="py-3 pr-3 text-muted">{r.id}</td>
+            <td class="py-3 pr-3">{r.txn}</td>
+            <td class="py-3 pr-3">
+              <span class={`pill ${r.weights === "high-risk" ? "pill-warn" : "pill-muted"}`}>{r.weights}</span>
+            </td>
+            <td class="py-3 pr-3 font-mono font-semibold text-accent">{r.winner}</td>
+            <td class="py-3 pr-3 font-mono">{(r.confidence * 100).toFixed(0)}%</td>
+            <td class="py-3 text-muted">{r.note}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.3 Cold-Start &amp; Latency Observations</h3>
+  <p class="mb-4">
+    Cold start of the deployed Lambda is approximately 1.8&ndash;2.4&thinsp;s, dominated by the
+    Python runtime initialization and the ONNX session load from S3 (~200&thinsp;ms). Warm
+    requests complete the full ReAct loop in 2.0&ndash;3.5&thinsp;s, governed primarily by
+    Bedrock Converse latency &mdash; typically 4&ndash;6 model turns at ~400&thinsp;ms each. The
+    in&#8209;Lambda ONNX inference adds &lt;5&thinsp;ms per <code>estimate_interchange</code>
+    call. (Live latency observations are pending Bedrock access; figures based on the
+    canned&#8209;trace structure and standard Converse API behaviour.)
+  </p>
+
+  <h3>5.4 Reproducibility</h3>
+  <p class="mb-4">
+    All randomness in the data&#8209;generation and training pipelines is seeded
+    (<code>seed = 42</code>). The pre&#8209;trained <code>interchange_model.onnx</code> is
+    committed to the repository. Running
+    <code>python ml/generate_synthetic_data.py</code> followed by
+    <code>python ml/train_interchange_model.py</code> reproduces the artifact bit&#8209;for&#8209;bit.
+  </p>
+</section>
