@@ -1,6 +1,7 @@
 ---
 import scenarios from "../data/scenarios.json";
 const scenariosJson = JSON.stringify(scenarios);
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 <section id="demo" class="wide-col py-12">
   <div class="max-w-paper mx-auto mb-8">
@@ -16,6 +17,14 @@ const scenariosJson = JSON.stringify(scenarios);
       The third scenario is the most interesting &mdash; it demonstrates ReAct's defining
       property: the agent <em>adapts its plan mid&#8209;loop</em> after discovering CB is
       disabled, skipping unnecessary tool calls and explaining the exclusion in the rationale.
+    </p>
+    <p class="mb-2">
+      <a href={`${baseUrl}/live`} class="pill pill-accent">
+        Try the live API &rarr;
+      </a>
+      <span class="text-sm text-muted ml-2">
+        Calls the real deployed Lambda. Pick Bedrock or Anthropic. ~25&ndash;40s per call.
+      </span>
     </p>
   </div>
 
